@@ -56,6 +56,12 @@ const GLOWS = {
   dark: '0 2px 8px rgba(0, 0, 0, 0.55)'
 };
 
+// Същите ореоли във вид, подходящ за canvas (при сваляне на картичката)
+const CANVAS_GLOWS = {
+  light: { color: 'rgba(255, 255, 255, 0.8)', blur: 8, offsetY: 1 },
+  dark: { color: 'rgba(0, 0, 0, 0.55)', blur: 8, offsetY: 2 }
+};
+
 // Шрифтове: id съвпада с data-font в style.css (всички поддържат кирилица)
 const FONTS = [
   { id: 'playfair', label: 'Аа', css: "'Playfair Display', serif", italic: true },
@@ -63,6 +69,8 @@ const FONTS = [
   { id: 'caveat', label: 'Аа', css: "'Caveat', cursive", bold: true },
   { id: 'pacifico', label: 'Аа', css: "'Pacifico', cursive" }
 ];
+
+const MAX_CHARS = 300;
 
 const card = document.getElementById('card');
 const cardText = document.getElementById('cardText');
@@ -72,6 +80,9 @@ const fontsBox = document.getElementById('fonts');
 const messageInput = document.getElementById('messageInput');
 const charCount = document.getElementById('charCount');
 const sizeInput = document.getElementById('sizeInput');
+
+const downloadBtn = document.getElementById('downloadBtn');
+const copyLinkBtn = document.getElementById('copyLinkBtn');
 
 let currentTplId = TEMPLATES[0].id;
 let currentCat = 'all';
@@ -166,10 +177,327 @@ function updateSize() {
 }
 sizeInput.addEventListener('input', updateSize);
 
+// ======================================================
+// Изпращане: сваляне и линк
+// ======================================================
+
+// Кратко потвърждение върху самия бутон (не добавя нищо към страницата)
+function flashLabel(btn, text, ms = 2000) {
+  if (!btn.dataset.label) btn.dataset.label = btn.textContent;
+  btn.style.minWidth = btn.offsetWidth + 'px';
+  btn.textContent = text;
+  clearTimeout(btn.flashTimer);
+  if (ms) {
+    btn.flashTimer = setTimeout(() => {
+      btn.textContent = btn.dataset.label;
+      btn.style.minWidth = '';
+    }, ms);
+  }
+}
+
+// --- Кратък запис на текста за линка ---
+// Всеки знак от азбуката по-долу става ЕДНА цифра (в система с основа 84),
+// а цялото число се записва с 64 безопасни за адреса знака (A-Z, a-z, 0-9, - и _).
+// Така 300 български букви излизат около 320 знака вместо около 1800.
+// Знаци извън азбуката (латиница, емотикони и др.) се записват с 4 цифри.
+const TEXT_ALPHABET =
+  'абвгдежзийклмнопрстуфхцчшщъьюя' +
+  'АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЬЮЯ' +
+  ' \n0123456789.,!?:;-()"\'';
+const ESC = TEXT_ALPHABET.length; // специален знак: следват 3 цифри с код на знак
+const RADIX = ESC + 1;
+const URL_DIGITS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+
+function packText(text) {
+  const digits = [1]; // водеща единица, за да не се губят нули в началото
+  for (let i = 0; i < text.length; i++) {
+    const idx = TEXT_ALPHABET.indexOf(text[i]);
+    if (idx >= 0) {
+      digits.push(idx);
+    } else {
+      const code = text.charCodeAt(i);
+      digits.push(ESC, Math.floor(code / (RADIX * RADIX)), Math.floor(code / RADIX) % RADIX, code % RADIX);
+    }
+  }
+  let n = 0n;
+  for (const d of digits) n = n * BigInt(RADIX) + BigInt(d);
+  let out = '';
+  while (n > 0n) {
+    out = URL_DIGITS[Number(n % 64n)] + out;
+    n /= 64n;
+  }
+  return out;
+}
+
+function unpackText(code) {
+  let n = 0n;
+  for (const ch of code) {
+    const v = URL_DIGITS.indexOf(ch);
+    if (v < 0) throw new Error('Невалиден код');
+    n = n * 64n + BigInt(v);
+  }
+  const digits = [];
+  while (n > 0n) {
+    digits.unshift(Number(n % BigInt(RADIX)));
+    n /= BigInt(RADIX);
+  }
+  digits.shift(); // водещата единица
+  let text = '';
+  for (let i = 0; i < digits.length; i++) {
+    const d = digits[i];
+    if (d === ESC) {
+      text += String.fromCharCode(digits[i + 1] * RADIX * RADIX + digits[i + 2] * RADIX + digits[i + 3]);
+      i += 3;
+    } else if (d < ESC) {
+      text += TEXT_ALPHABET[d];
+    }
+  }
+  return text;
+}
+// --- край на краткия запис ---
+
+// Линк, който пази избраната картичка, шрифт, размер и текст в адреса.
+// v=1 означава, че линкът отваря само картичката (без редактора).
+function buildLink() {
+  const base = location.href.split(/[?#]/)[0];
+  const parts = [
+    'c=' + encodeURIComponent(currentTplId),
+    'f=' + encodeURIComponent(card.dataset.font),
+    's=' + encodeURIComponent(sizeInput.value),
+    'x=' + packText(messageInput.value),
+    'v=1'
+  ];
+  return base + '?' + parts.join('&');
+}
+
+// --- Рисуване на картичката в canvas (за сваляне и споделяне като файл) ---
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error('Картинката не се зареди'));
+    img.src = src;
+  });
+}
+
+// Разделя текста на редове според ширината (като white-space: pre-wrap + overflow-wrap: anywhere)
+function wrapText(ctx, text, maxWidth) {
+  const lines = [];
+  text.split('\n').forEach(paragraph => {
+    if (paragraph === '') {
+      lines.push('');
+      return;
+    }
+    let line = '';
+    paragraph.split(' ').forEach(word => {
+      const test = line ? line + ' ' + word : word;
+      if (ctx.measureText(test).width <= maxWidth) {
+        line = test;
+        return;
+      }
+      if (line) {
+        lines.push(line);
+        line = '';
+      }
+      if (ctx.measureText(word).width <= maxWidth) {
+        line = word;
+        return;
+      }
+      // Много дълга дума: чупи се по букви
+      let chunk = '';
+      for (const ch of word) {
+        if (chunk && ctx.measureText(chunk + ch).width > maxWidth) {
+          lines.push(chunk);
+          chunk = ch;
+        } else {
+          chunk += ch;
+        }
+      }
+      line = chunk;
+    });
+    lines.push(line);
+  });
+  return lines;
+}
+
+async function renderCardBlob() {
+  const t = TEMPLATES.find(x => x.id === currentTplId);
+  const img = await loadImage(`images/card-${t.id}.jpg`);
+
+  // Размерите и стилът на текста се взимат от това, което се вижда на екрана
+  const cs = getComputedStyle(cardText);
+  const k = Math.min(img.naturalWidth || 1200, 1800) / card.clientWidth;
+  const W = Math.round(card.clientWidth * k);
+  const H = Math.round(W * 2 / 3);
+  const fontPx = parseFloat(cs.fontSize) * k;
+  const fontSpec = `${cs.fontStyle} ${cs.fontWeight} ${fontPx}px ${cs.fontFamily}`;
+  const text = cardText.textContent;
+
+  try {
+    await document.fonts.load(fontSpec, text);
+    await document.fonts.ready;
+  } catch (e) {
+    // ако шрифтът не може да се зареди, ползва се резервният
+  }
+
+  const canvas = document.createElement('canvas');
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  // Фон (като background-size: cover)
+  const scale = Math.max(W / img.naturalWidth, H / img.naturalHeight);
+  const dw = img.naturalWidth * scale;
+  const dh = img.naturalHeight * scale;
+  ctx.drawImage(img, (W - dw) / 2, (H - dh) / 2, dw, dh);
+
+  // Зона за текста
+  const zx = W * t.zone[3] / 100;
+  const zy = H * t.zone[0] / 100;
+  const zw = W * (100 - t.zone[1] - t.zone[3]) / 100;
+  const zh = H * (100 - t.zone[0] - t.zone[2]) / 100;
+
+  ctx.font = fontSpec;
+  ctx.fillStyle = cs.color;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  const glow = CANVAS_GLOWS[t.glow];
+  if (glow) {
+    ctx.shadowColor = glow.color;
+    ctx.shadowBlur = glow.blur * k;
+    ctx.shadowOffsetY = glow.offsetY * k;
+  }
+
+  const lines = wrapText(ctx, text, zw);
+  const lineHeight = fontPx * 1.25;
+  const totalHeight = lines.length * lineHeight;
+  let y = zy + (zh - totalHeight) / 2 + lineHeight / 2;
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(zx, zy, zw, zh);
+  ctx.clip();
+  lines.forEach(line => {
+    ctx.fillText(line, zx + zw / 2, y);
+    y += lineHeight;
+  });
+  ctx.restore();
+
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      blob => (blob ? resolve(blob) : reject(new Error('Неуспешно създаване на файл'))),
+      'image/jpeg',
+      0.92
+    );
+  });
+}
+
+const RENDER_ERROR =
+  'Не успях да създам картинката. Ако си отворила файла директно от папката, ' +
+  'отвори сайта през Live Server или от адреса в GitHub Pages.';
+
+// --- Свали картичката ---
+async function downloadCard() {
+  downloadBtn.disabled = true;
+  flashLabel(downloadBtn, 'Подготвям…', 0);
+  try {
+    const blob = await renderCardBlob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `kartichka-${currentTplId}.jpg`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    flashLabel(downloadBtn, 'Свалена ✓');
+  } catch (e) {
+    flashLabel(downloadBtn, 'Свали картичката', 1);
+    alert(RENDER_ERROR);
+  } finally {
+    downloadBtn.disabled = false;
+  }
+}
+
+// --- Копирай линка ---
+async function copyLink() {
+  const link = buildLink();
+  try {
+    await navigator.clipboard.writeText(link);
+    flashLabel(copyLinkBtn, 'Копирано ✓');
+  } catch (e) {
+    const tmp = document.createElement('textarea');
+    tmp.value = link;
+    tmp.style.position = 'fixed';
+    tmp.style.opacity = '0';
+    document.body.appendChild(tmp);
+    tmp.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch (err) { ok = false; }
+    tmp.remove();
+    if (ok) {
+      flashLabel(copyLinkBtn, 'Копирано ✓');
+    } else {
+      alert('Не успях да копирам линка автоматично.');
+    }
+  }
+}
+
+downloadBtn.addEventListener('click', downloadCard);
+copyLinkBtn.addEventListener('click', copyLink);
+
+// ======================================================
+// Отваряне от линк: ?c=<картичка>&f=<шрифт>&s=<размер>&x=<текст в кратък код>&v=1
+// (v=1 показва само картичката, виж и малкия скрипт в <head> на index.html)
+// ======================================================
+const params = new URLSearchParams(location.search);
+
+const paramTpl = params.get('c');
+if (paramTpl && TEMPLATES.some(x => x.id === paramTpl)) {
+  currentTplId = paramTpl;
+}
+
+const paramFont = params.get('f');
+const startFont = FONTS.some(f => f.id === paramFont) ? paramFont : FONTS[0].id;
+
+const paramSize = parseFloat(params.get('s'));
+if (!isNaN(paramSize)) {
+  const min = parseFloat(sizeInput.min);
+  const max = parseFloat(sizeInput.max);
+  sizeInput.value = Math.min(max, Math.max(min, paramSize));
+}
+
+if (params.has('x')) {
+  // нов, кратък формат
+  try {
+    messageInput.value = unpackText(params.get('x')).slice(0, MAX_CHARS);
+  } catch (e) {
+    // повреден код: остава текстът по подразбиране
+  }
+} else if (params.has('t')) {
+  // стар формат (t=...), за да работят вече изпратените линкове
+  messageInput.value = params.get('t').slice(0, MAX_CHARS);
+}
+
 // --- Начално състояние ---
 catsBox.querySelector('.cat-btn').classList.add('active'); // "Всички"
 renderThumbs();
 selectTemplate(currentTplId);
-selectFont(FONTS[0].id);
+selectFont(startFont);
 updateText();
 updateSize();
+
+// Ако картичката е от линк, показва я в списъка с миниатюри
+if (paramTpl) {
+  const active = thumbs.querySelector('.thumb.active');
+  if (active) {
+    thumbs.scrollTop += active.getBoundingClientRect().top - thumbs.getBoundingClientRect().top - 4;
+  }
+}
+
+// Годината във футъра
+const yearEl = document.getElementById('year');
+if (yearEl) {
+  yearEl.textContent = new Date().getFullYear();
+}

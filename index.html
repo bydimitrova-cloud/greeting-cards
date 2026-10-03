@@ -11,6 +11,12 @@
     href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Marck+Script&family=Pacifico&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <script>
+    // Линк с v=1 показва само картичката (без редактора)
+    if (new URLSearchParams(location.search).get('v') === '1') {
+      document.documentElement.classList.add('view-mode');
+    }
+  </script>
 </head>
 
 <body>
@@ -18,35 +24,57 @@
     <h1 class="app-title">Поздравителни <em>картички</em></h1>
     <p class="app-sub">Избери картичка, напиши поздрава си и го изпрати.</p>
 
-    <!-- Картичката (преглед на живо) -->
-    <div class="card" id="card">
-      <div class="card-text" id="cardText">Честит рожден ден!</div>
+    <div class="layout">
+      <!-- Вляво: картичката (преглед на живо) -->
+      <div class="preview">
+        <div class="card" id="card">
+          <div class="card-text" id="cardText">Честит рожден ден!</div>
+        </div>
+      </div>
+
+      <!-- Вдясно: настройки -->
+      <div class="controls">
+        <!-- 1. Избор на картичка -->
+        <section class="panel">
+          <h2>1. Избери картичка</h2>
+          <div class="cats" id="cats"></div>
+          <div class="thumbs" id="thumbs"></div>
+        </section>
+
+        <!-- 2. Текст -->
+        <section class="panel panel-text">
+          <h2>2. Напиши поздрава</h2>
+          <textarea id="messageInput" rows="4" maxlength="300"
+            placeholder="Напр. Честит рожден ден! Желая ти здраве и много радост!">Честит рожден ден!</textarea>
+          <div class="counter"><span id="charCount">0</span> / 300</div>
+        </section>
+
+        <!-- 3. Стил на текста -->
+        <section class="panel">
+          <h2>3. Стил на текста</h2>
+          <div class="fonts" id="fonts"></div>
+          <label class="size-row">
+            <span>Размер</span>
+            <input type="range" id="sizeInput" min="1.5" max="9" step="0.1" value="6">
+          </label>
+        </section>
+
+        <!-- 4. Изпращане -->
+        <section class="panel">
+          <h2>4. Изпрати картичката</h2>
+          <div class="send-row">
+            <div class="send-actions">
+              <button type="button" class="action-btn primary" id="downloadBtn">Свали картичката</button>
+              <button type="button" class="action-btn" id="copyLinkBtn">Копирай линка</button>
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
 
-    <!-- 1. Избор на картичка -->
-    <section class="panel">
-      <h2>1. Избери картичка</h2>
-      <div class="cats" id="cats"></div>
-      <div class="thumbs" id="thumbs"></div>
-    </section>
-
-    <!-- 2. Текст -->
-    <section class="panel">
-      <h2>2. Напиши поздрава</h2>
-      <textarea id="messageInput" rows="4" maxlength="300"
-        placeholder="Напр. Честит рожден ден! Желая ти здраве и много радост!">Честит рожден ден!</textarea>
-      <div class="counter"><span id="charCount">0</span> / 300</div>
-    </section>
-
-    <!-- 3. Стил на текста -->
-    <section class="panel">
-      <h2>3. Стил на текста</h2>
-      <div class="fonts" id="fonts"></div>
-      <label class="size-row">
-        <span>Размер</span>
-        <input type="range" id="sizeInput" min="1.5" max="9" step="0.1" value="6">
-      </label>
-    </section>
+    <footer class="site-footer">
+      <p>&copy; <span id="year">2026</span> Боряна Димитрова</p>
+    </footer>
   </main>
 
   <script src="script.js"></script>
