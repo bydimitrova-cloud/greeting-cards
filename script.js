@@ -7,7 +7,7 @@ const CATEGORIES = [
   { id: 'all', label: 'Всички' },
   { id: 'flowers', label: 'Цветя' },
   { id: 'love', label: 'Рози и любов' },
-  { id: 'gifts', label: 'Подаръци' },
+  { id: 'birthday', label: 'Рожден ден' },
   { id: 'xmas', label: 'Коледа' },
   { id: 'easter', label: 'Великден' }
 ];
@@ -19,14 +19,14 @@ const CATEGORIES = [
 // glow  -> 'light' (светъл ореол, за светли фонове) или 'dark' (тъмна сянка, за светъл текст)
 const TEMPLATES = [
   // --- Цветя ---
+  { id: 'violet-basket', cat: 'flowers', label: 'Лилава кошница', zone: [12, 58, 18, 6], color: '#7a3f6a' },
   { id: 'gold', cat: 'flowers', label: 'Златни цветя', zone: [10, 6, 32, 30], color: '#7a4a3a' },
   { id: 'basket', cat: 'flowers', label: 'Кошница с цветя', zone: [12, 58, 18, 6], color: '#8a4f4a' },
   { id: 'frame', cat: 'flowers', label: 'Цветна рамка', zone: [20, 22, 20, 22], color: '#5b3f63' },
   { id: 'spring', cat: 'flowers', label: 'Пролетен букет', zone: [12, 60, 18, 6], color: '#3d6b5c' },
-  { id: 'violet-basket', cat: 'flowers', label: 'Лилава кошница', zone: [12, 58, 18, 6], color: '#7a3f6a' },
   { id: 'cream', cat: 'flowers', label: 'Нежни цветя', zone: [12, 24, 32, 24], color: '#6b5444' },
   { id: 'lily', cat: 'flowers', label: 'Лилия', zone: [12, 4, 14, 68], color: '#8a5238' },
-  { id: 'pink-flowers', cat: 'flowers', label: 'Розови цветя', zone: [14, 6, 22, 36], color: '#7a5a48' },
+  { id: 'dusty-roses', cat: 'love', label: 'Пудрени рози', zone: [14, 6, 16, 46], color: '#7a4a5a' },
   { id: 'purple-basket', cat: 'flowers', label: 'Кошница с люляк', zone: [12, 58, 18, 6], color: '#6a3f6f' },
 
   // --- Рози и любов ---
@@ -35,20 +35,39 @@ const TEMPLATES = [
   { id: 'gold-roses', cat: 'love', label: 'Златни рози', zone: [14, 6, 40, 40], color: '#6a4534' },
   { id: 'pink-roses', cat: 'love', label: 'Рози с панделка', zone: [12, 54, 18, 6], color: '#8a4a5f' },
   { id: 'red-rose', cat: 'love', label: 'Червена роза', zone: [14, 6, 18, 42], color: '#9a3a38' },
-  { id: 'dusty-roses', cat: 'love', label: 'Пудрени рози', zone: [14, 6, 16, 46], color: '#7a4a5a' },
+  { id: 'pink-flowers', cat: 'flowers', label: 'Розови цветя', zone: [14, 6, 22, 36], color: '#7a5a48' },
+  { id: 'gold-hearts', cat: 'love', label: 'Златни сърца', zone: [32, 32, 32, 32], color: '#6a4534' },
+  { id: 'gold-frame', cat: 'love', label: 'Златна рамка с рози', zone: [36, 27, 34, 28], color: '#6a3a3f' },
+  { id: 'pink-roses-gold', cat: 'love', label: 'Рози в рамка', zone: [32, 30, 31, 33], color: '#7a4545' },
+  { id: 'roses-black', cat: 'love', label: 'Рози и черна рамка', zone: [31, 28, 33, 27], color: '#f1d9a8' },
 
-  // --- Подаръци ---
-  { id: 'gifts', cat: 'gifts', label: 'Подаръци', zone: [12, 52, 18, 6], color: '#5b6f8a' },
+  // --- Рожден ден ---
+  { id: 'gifts', cat: 'birthday', label: 'Подаръци', zone: [12, 52, 18, 6], color: '#5b6f8a' },
+  { id: 'bday-blue', cat: 'birthday', label: 'Рожден ден – синя', zone: [24, 24, 30, 30], color: '#1f4f7a', glow: 'light' },
+  { id: 'bday-balloons', cat: 'birthday', label: 'Рожден ден – балони', zone: [34, 24, 33, 24], color: '#1d4a5c', glow: 'light' },
 
   // --- Коледа ---
   { id: 'holly', cat: 'xmas', label: 'Коледен имел', zone: [12, 40, 14, 8], color: '#fab905', glow: 'dark' },
   { id: 'bauble', cat: 'xmas', label: 'Коледна топка', zone: [14, 40, 16, 12], color: '#1f4a47', glow: 'light' },
   { id: 'xmas-frame', cat: 'xmas', label: 'Коледна рамка', zone: [14, 40, 16, 10], color: '#123b36', glow: 'light' },
   { id: 'xmas-gold', cat: 'xmas', label: 'Коледна със злато', zone: [12, 8, 14, 42], color: '#22403c', glow: 'light' },
+  { id: 'tree-gifts', cat: 'xmas', label: 'Елха с подаръци', zone: [26, 16, 24, 31], color: '#22403c', glow: 'light' },
+  { id: 'santa', cat: 'xmas', label: 'Дядо Коледа', zone: [14, 55, 16, 5], color: '#7a3a2f', glow: 'light' },
+  { id: 'blue-tree', cat: 'xmas', label: 'Синя елха', zone: [8, 48, 50, 5], color: '#2f5f73', glow: 'light' },
+  { id: 'baubles-white', cat: 'xmas', label: 'Златни топки', zone: [14, 26, 14, 24], color: '#2c5159', glow: 'light' },
+  { id: 'baubles-pink', cat: 'xmas', label: 'Топки и снежинки', zone: [26, 28, 30, 34], color: '#4b5f6b', glow: 'light' },
+  { id: 'blue-gifts', cat: 'xmas', label: 'Елха със сини подаръци', zone: [20, 24, 28, 38], color: '#2f5a6e', glow: 'light' },
+  { id: 'baubles-watercolor', cat: 'xmas', label: 'Акварелни топки', zone: [18, 3, 18, 67], color: '#2f5a63', glow: 'light' },
+  { id: 'gift-poinsettia', cat: 'xmas', label: 'Подарък с коледна звезда', zone: [14, 57, 16, 5], color: '#6b3a3a', glow: 'light' },
+  { id: 'navy-bows', cat: 'xmas', label: 'Тъмносиня с панделки', zone: [28, 24, 27, 26], color: '#f4e3b8' },
+  { id: 'navy-tree', cat: 'xmas', label: 'Тъмносиня елха', zone: [12, 46, 12, 6], color: '#f4e3b8' },
+  { id: 'pastel-tree', cat: 'xmas', label: 'Пастелна елха', zone: [12, 50, 14, 5], color: '#2f5565', glow: 'light' },
+  { id: 'mint-copper', cat: 'xmas', label: 'Мента и мед', zone: [26, 18, 24, 50], color: '#8a4f33', glow: 'light' },
+
 
   // --- Великден ---
   { id: 'easter-1', cat: 'easter', label: 'Великденски яйца', zone: [12, 6, 14, 53], color: '#5e4a2a' },
-  { id: 'easter-2', cat: 'easter', label: 'Великденски яйца 2', zone: [12, 58, 12, 7], color: '#6b4a2a' }
+  { id: 'easter-2', cat: 'easter', label: 'Великденски яйца 2', zone: [12, 58, 12, 7], color: '#6b4a2a' },
 ];
 
 const GLOWS = {
@@ -64,9 +83,11 @@ const CANVAS_GLOWS = {
 
 // Шрифтове: id съвпада с data-font в style.css (всички поддържат кирилица)
 const FONTS = [
-  { id: 'playfair', label: 'Аа', css: "'Playfair Display', serif", italic: true },
-  { id: 'marck', label: 'Аа', css: "'Marck Script', cursive" },
+  { id: 'greatvibes', label: 'Аа', css: "'Great Vibes', cursive" },
   { id: 'caveat', label: 'Аа', css: "'Caveat', cursive", bold: true },
+  { id: 'marck', label: 'Аа', css: "'Marck Script', cursive" },
+  { id: 'playfair', label: 'Аа', css: "'Playfair Display', serif", italic: true },
+  { id: 'cormorant', label: 'Аа', css: "'Cormorant Garamond', serif", italic: true },
   { id: 'pacifico', label: 'Аа', css: "'Pacifico', cursive" }
 ];
 

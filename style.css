@@ -223,6 +223,18 @@ textarea {
   --fs: 0.85;
 }
 
+.card[data-font="cormorant"] .card-text {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-weight: 600;
+  --fs: 1.25;
+}
+
+.card[data-font="greatvibes"] .card-text {
+  font-family: 'Great Vibes', cursive;
+  --fs: 1.5;
+}
+
 /* ======================================================
    ПАНЕЛИ
    ====================================================== */
@@ -365,8 +377,8 @@ textarea:focus {
 /* Шрифтове и размер */
 .fonts {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
   margin-bottom: 24px;
 }
 
@@ -375,8 +387,8 @@ textarea:focus {
   background: #fff;
   color: var(--ink);
   border-radius: 10px;
-  padding: 8px 4px;
-  font-size: 17px;
+  padding: 8px 2px;
+  font-size: 16px;
   cursor: pointer;
   transition: background 0.15s ease;
 }
