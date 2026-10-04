@@ -47,7 +47,9 @@ textarea {
   color: var(--deep);
   text-align: center;
   line-height: 1.2;
-  margin: 0 0 30px;
+  width: fit-content;
+  margin: 0 auto 30px;
+  cursor: default;
 }
 
 .app-title em {
@@ -420,7 +422,7 @@ textarea:focus {
 }
 
 .action-btn {
-  border: 1px solid var(--accent);
+  border: 1px solid var(--border);
   background: #fff;
   color: var(--accent);
   border-radius: 10px;
@@ -436,6 +438,7 @@ textarea:focus {
 
 .action-btn.primary {
   background: var(--accent);
+  border-color: var(--accent);
   color: #fff;
 }
 
@@ -531,5 +534,56 @@ textarea:focus {
 
   .panel h2 {
     font-size: 19px;
+  }
+}
+
+/* Картичката леко се вдига при задържане на мишката (само мишка, без намалено движение) */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .preview:hover .card {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 44px rgba(90, 60, 70, 0.30);
+  }
+}
+
+/* Бутони: плавно надигане при задържане, леко "потъване" при натискане */
+.font-btn,
+.action-btn,
+.cat-btn {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+
+  .font-btn:hover,
+  .action-btn:not(:disabled):hover,
+  .cat-btn:hover {
+    transform: translateY(-3px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+
+  .font-btn:active,
+  .action-btn:not(:disabled):active,
+  .cat-btn:active {
+    transform: translateY(1px);
+    transition-duration: 0.1s;
+  }
+}
+
+/* Заглавието се измества плавно надясно при задържане на мишката */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .app-title {
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .app-title:hover {
+    transform: translateX(14px);
   }
 }

@@ -19,36 +19,36 @@ const CATEGORIES = [
 // glow  -> 'light' (светъл ореол, за светли фонове) или 'dark' (тъмна сянка, за светъл текст)
 const TEMPLATES = [
   // --- Цветя ---
-  { id: 'gold', cat: 'flowers', label: 'Златни цветя', zone: [8, 6, 42, 26], color: '#7a4a3a' },
-  { id: 'basket', cat: 'flowers', label: 'Кошница с цветя', zone: [12, 52, 18, 6], color: '#8a4f4a' },
+  { id: 'gold', cat: 'flowers', label: 'Златни цветя', zone: [10, 6, 32, 30], color: '#7a4a3a' },
+  { id: 'basket', cat: 'flowers', label: 'Кошница с цветя', zone: [12, 58, 18, 6], color: '#8a4f4a' },
   { id: 'frame', cat: 'flowers', label: 'Цветна рамка', zone: [20, 22, 20, 22], color: '#5b3f63' },
-  { id: 'spring', cat: 'flowers', label: 'Пролетен букет', zone: [14, 58, 22, 6], color: '#3d6b5c' },
-  { id: 'violet-basket', cat: 'flowers', label: 'Лилава кошница', zone: [12, 56, 20, 6], color: '#7a3f6a' },
+  { id: 'spring', cat: 'flowers', label: 'Пролетен букет', zone: [12, 60, 18, 6], color: '#3d6b5c' },
+  { id: 'violet-basket', cat: 'flowers', label: 'Лилава кошница', zone: [12, 58, 18, 6], color: '#7a3f6a' },
   { id: 'cream', cat: 'flowers', label: 'Нежни цветя', zone: [12, 24, 32, 24], color: '#6b5444' },
   { id: 'lily', cat: 'flowers', label: 'Лилия', zone: [12, 4, 14, 68], color: '#8a5238' },
-  { id: 'pink-flowers', cat: 'flowers', label: 'Розови цветя', zone: [14, 6, 22, 42], color: '#7a5a48' },
-  { id: 'purple-basket', cat: 'flowers', label: 'Кошница с люляк', zone: [14, 62, 22, 6], color: '#6a3f6f' },
+  { id: 'pink-flowers', cat: 'flowers', label: 'Розови цветя', zone: [14, 6, 22, 36], color: '#7a5a48' },
+  { id: 'purple-basket', cat: 'flowers', label: 'Кошница с люляк', zone: [12, 58, 18, 6], color: '#6a3f6f' },
 
   // --- Рози и любов ---
   { id: 'red-roses', cat: 'love', label: 'Червени рози', zone: [16, 24, 24, 20], color: '#7a2f35' },
-  { id: 'rose-hearts', cat: 'love', label: 'Роза и сърца', zone: [14, 6, 20, 58], color: '#7a4a6a' },
-  { id: 'gold-roses', cat: 'love', label: 'Златни рози', zone: [10, 6, 40, 40], color: '#6a4534' },
-  { id: 'pink-roses', cat: 'love', label: 'Рози с панделка', zone: [14, 56, 18, 6], color: '#8a4a5f' },
-  { id: 'red-rose', cat: 'love', label: 'Червена роза', zone: [14, 22, 18, 42], color: '#9a3a38' },
-  { id: 'dusty-roses', cat: 'love', label: 'Пудрени рози', zone: [14, 6, 16, 48], color: '#7a4a5a' },
+  { id: 'rose-hearts', cat: 'love', label: 'Роза и сърца', zone: [14, 6, 20, 52], color: '#7a4a6a' },
+  { id: 'gold-roses', cat: 'love', label: 'Златни рози', zone: [14, 6, 40, 40], color: '#6a4534' },
+  { id: 'pink-roses', cat: 'love', label: 'Рози с панделка', zone: [12, 54, 18, 6], color: '#8a4a5f' },
+  { id: 'red-rose', cat: 'love', label: 'Червена роза', zone: [14, 6, 18, 42], color: '#9a3a38' },
+  { id: 'dusty-roses', cat: 'love', label: 'Пудрени рози', zone: [14, 6, 16, 46], color: '#7a4a5a' },
 
   // --- Подаръци ---
-  { id: 'gifts', cat: 'gifts', label: 'Подаръци', zone: [14, 58, 18, 6], color: '#5b6f8a' },
+  { id: 'gifts', cat: 'gifts', label: 'Подаръци', zone: [12, 52, 18, 6], color: '#5b6f8a' },
 
   // --- Коледа ---
-  { id: 'holly', cat: 'xmas', label: 'Коледен имел', zone: [12, 40, 14, 8], color: '#fff6df', glow: 'dark' },
+  { id: 'holly', cat: 'xmas', label: 'Коледен имел', zone: [12, 40, 14, 8], color: '#fab905', glow: 'dark' },
   { id: 'bauble', cat: 'xmas', label: 'Коледна топка', zone: [14, 40, 16, 12], color: '#1f4a47', glow: 'light' },
-  { id: 'xmas-frame', cat: 'xmas', label: 'Коледна рамка', zone: [14, 36, 16, 10], color: '#123b36', glow: 'light' },
+  { id: 'xmas-frame', cat: 'xmas', label: 'Коледна рамка', zone: [14, 40, 16, 10], color: '#123b36', glow: 'light' },
   { id: 'xmas-gold', cat: 'xmas', label: 'Коледна със злато', zone: [12, 8, 14, 42], color: '#22403c', glow: 'light' },
 
   // --- Великден ---
   { id: 'easter-1', cat: 'easter', label: 'Великденски яйца', zone: [12, 6, 14, 53], color: '#5e4a2a' },
-  { id: 'easter-2', cat: 'easter', label: 'Великденски яйца 2', zone: [12, 54, 12, 7], color: '#6b4a2a' }
+  { id: 'easter-2', cat: 'easter', label: 'Великденски яйца 2', zone: [12, 58, 12, 7], color: '#6b4a2a' }
 ];
 
 const GLOWS = {
@@ -166,7 +166,7 @@ FONTS.forEach(f => {
 function updateText() {
   const val = messageInput.value;
   // textContent (не innerHTML) – безопасно, ако някой постави специални знаци
-  cardText.textContent = val.trim() ? val : 'Твоят поздрав тук';
+  cardText.textContent = val.trim() ? val : 'Твоето пожелание тук ...';
   charCount.textContent = val.length;
 }
 messageInput.addEventListener('input', updateText);
