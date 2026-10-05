@@ -187,7 +187,7 @@ FONTS.forEach(f => {
 function updateText() {
   const val = messageInput.value;
   // textContent (не innerHTML) – безопасно, ако някой постави специални знаци
-  cardText.textContent = val.trim() ? val : 'Твоето пожелание тук ...';
+  cardText.textContent = val.trim() ? val : 'Твоето пожелание тук';
   charCount.textContent = val.length;
 }
 messageInput.addEventListener('input', updateText);
