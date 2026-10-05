@@ -105,6 +105,38 @@ const sizeInput = document.getElementById('sizeInput');
 const downloadBtn = document.getElementById('downloadBtn');
 const copyLinkBtn = document.getElementById('copyLinkBtn');
 
+// --- Кратки линкове (Supabase) ---
+const sb = window.supabase
+  ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY)
+  : null;
+
+function genCardId() {
+  const chars = 'abcdefghijkmnpqrstuvwxyz23456789';
+  const bytes = crypto.getRandomValues(new Uint8Array(8));
+  return Array.from(bytes, b => chars[b % chars.length]).join('');
+}
+
+// Записва картичката и връща кратък линк. Ако не успее, връща стария дълъг линк.
+async function buildShortLink() {
+  try {
+    if (!sb) throw new Error('Supabase не е зареден');
+    const id = genCardId();
+    const { error } = await sb.from('cards').insert({
+      id,
+      tpl: currentTplId,
+      font: card.dataset.font,
+      size: parseFloat(sizeInput.value),
+      msg: messageInput.value.slice(0, MAX_CHARS)
+    });
+    if (error) throw error;
+    const base = location.href.split(/[?#]/)[0];
+    return base + '?k=' + id + '&v=1';
+  } catch (e) {
+    console.warn('Кратък линк не стана, ползвам дългия.', e);
+    return buildLink();
+  }
+}
+
 let currentTplId = TEMPLATES[0].id;
 let currentCat = 'all';
 
@@ -443,25 +475,40 @@ async function downloadCard() {
 
 // --- Копирай линка ---
 async function copyLink() {
-  const link = buildLink();
+  copyLinkBtn.disabled = true;
+  flashLabel(copyLinkBtn, 'Подготвям…', 0);
+  const linkPromise = buildShortLink();
+  let ok = false;
   try {
-    await navigator.clipboard.writeText(link);
-    flashLabel(copyLinkBtn, 'Копирано ✓');
+    // Promise в ClipboardItem, за да работи и в Safari (iPhone) след изчакване
+    await navigator.clipboard.write([
+      new ClipboardItem({
+        'text/plain': linkPromise.then(l => new Blob([l], { type: 'text/plain' }))
+      })
+    ]);
+    ok = true;
   } catch (e) {
-    const tmp = document.createElement('textarea');
-    tmp.value = link;
-    tmp.style.position = 'fixed';
-    tmp.style.opacity = '0';
-    document.body.appendChild(tmp);
-    tmp.select();
-    let ok = false;
-    try { ok = document.execCommand('copy'); } catch (err) { ok = false; }
-    tmp.remove();
-    if (ok) {
-      flashLabel(copyLinkBtn, 'Копирано ✓');
-    } else {
-      alert('Не успях да копирам линка автоматично.');
+    const link = await linkPromise;
+    try {
+      await navigator.clipboard.writeText(link);
+      ok = true;
+    } catch (err) {
+      const tmp = document.createElement('textarea');
+      tmp.value = link;
+      tmp.style.position = 'fixed';
+      tmp.style.opacity = '0';
+      document.body.appendChild(tmp);
+      tmp.select();
+      try { ok = document.execCommand('copy'); } catch (err2) { ok = false; }
+      tmp.remove();
     }
+  }
+  copyLinkBtn.disabled = false;
+  if (ok) {
+    flashLabel(copyLinkBtn, 'Копирано ✓');
+  } else {
+    flashLabel(copyLinkBtn, 'Копирай линка', 1);
+    alert('Не успях да копирам линка автоматично.');
   }
 }
 
@@ -522,3 +569,26 @@ const yearEl = document.getElementById('year');
 if (yearEl) {
   yearEl.textContent = new Date().getFullYear();
 }
+
+// Отваряне от кратък линк: ?k=<код>&v=1
+async function loadSharedCard(key) {
+  try {
+    if (!sb) return;
+    const { data, error } = await sb.rpc('get_card', { p_id: key });
+    if (error || !data || !data.length) return;
+    const c = data[0];
+    if (TEMPLATES.some(x => x.id === c.tpl)) selectTemplate(c.tpl);
+    if (FONTS.some(f => f.id === c.font)) selectFont(c.font);
+    const min = parseFloat(sizeInput.min);
+    const max = parseFloat(sizeInput.max);
+    sizeInput.value = Math.min(max, Math.max(min, c.size));
+    messageInput.value = String(c.msg).slice(0, MAX_CHARS);
+    updateText();
+    updateSize();
+  } catch (e) {
+    // при грешка остава картичката по подразбиране
+  }
+}
+
+const paramKey = params.get('k');
+if (paramKey) loadSharedCard(paramKey);
