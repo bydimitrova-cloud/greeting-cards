@@ -116,8 +116,13 @@ function genCardId() {
   return Array.from(bytes, b => chars[b % chars.length]).join('');
 }
 
+// Помни последния записан линк, за да не се записва една и съща картичка многократно
+let lastSaved = { sig: '', link: '' };
+
 // Записва картичката и връща кратък линк. Ако не успее, връща стария дълъг линк.
 async function buildShortLink() {
+  const sig = JSON.stringify([currentTplId, card.dataset.font, sizeInput.value, messageInput.value]);
+  if (lastSaved.sig === sig) return lastSaved.link;
   try {
     if (!sb) throw new Error('Supabase не е зареден');
     const id = genCardId();
@@ -130,7 +135,9 @@ async function buildShortLink() {
     });
     if (error) throw error;
     const base = location.href.split(/[?#]/)[0];
-    return base + '?k=' + id + '&v=1';
+    const link = base + '?k=' + id + '&v=1';
+    lastSaved = { sig, link };
+    return link;
   } catch (e) {
     console.warn('Кратък линк не стана, ползвам дългия.', e);
     return buildLink();
