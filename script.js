@@ -5,8 +5,7 @@
 // Категории (cat в картичките по-долу)
 const CATEGORIES = [
   { id: 'all', label: 'Всички' },
-  { id: 'flowers', label: 'Цветя' },
-  { id: 'love', label: 'Рози и любов' },
+  { id: 'flowers', label: 'Цветя и любов' },
   { id: 'birthday', label: 'Рожден ден' },
   { id: 'xmas', label: 'Коледа' },
   { id: 'easter', label: 'Великден' },
@@ -27,20 +26,18 @@ const TEMPLATES = [
   { id: 'spring', cat: 'flowers', label: 'Пролетен букет', zone: [12, 60, 18, 6], color: '#3d6b5c' },
   { id: 'cream', cat: 'flowers', label: 'Нежни цветя', zone: [12, 24, 32, 24], color: '#6b5444' },
   { id: 'lily', cat: 'flowers', label: 'Лилия', zone: [12, 4, 14, 68], color: '#8a5238' },
-  { id: 'dusty-roses', cat: 'love', label: 'Пудрени рози', zone: [14, 6, 16, 46], color: '#7a4a5a' },
+  { id: 'dusty-roses', cat: 'flowers', label: 'Пудрени рози', zone: [14, 6, 16, 46], color: '#7a4a5a' },
   { id: 'purple-basket', cat: 'flowers', label: 'Кошница с люляк', zone: [12, 58, 18, 6], color: '#6a3f6f' },
-
-  // --- Рози и любов ---
-  { id: 'red-roses', cat: 'love', label: 'Червени рози', zone: [16, 24, 24, 20], color: '#7a2f35' },
-  { id: 'rose-hearts', cat: 'love', label: 'Роза и сърца', zone: [14, 6, 20, 52], color: '#7a4a6a' },
-  { id: 'gold-roses', cat: 'love', label: 'Златни рози', zone: [14, 6, 40, 40], color: '#6a4534' },
-  { id: 'pink-roses', cat: 'love', label: 'Рози с панделка', zone: [12, 54, 18, 6], color: '#8a4a5f' },
-  { id: 'red-rose', cat: 'love', label: 'Червена роза', zone: [14, 6, 18, 42], color: '#9a3a38' },
+  { id: 'red-roses', cat: 'flowers', label: 'Червени рози', zone: [16, 24, 24, 20], color: '#7a2f35' },
+  { id: 'rose-hearts', cat: 'flowers', label: 'Роза и сърца', zone: [14, 6, 20, 52], color: '#7a4a6a' },
+  { id: 'gold-roses', cat: 'flowers', label: 'Златни рози', zone: [14, 6, 40, 40], color: '#6a4534' },
+  { id: 'pink-roses', cat: 'flowers', label: 'Рози с панделка', zone: [12, 54, 18, 6], color: '#8a4a5f' },
+  { id: 'red-rose', cat: 'flowers', label: 'Червена роза', zone: [14, 6, 18, 42], color: '#9a3a38' },
   { id: 'pink-flowers', cat: 'flowers', label: 'Розови цветя', zone: [14, 6, 22, 36], color: '#7a5a48' },
-  { id: 'gold-hearts', cat: 'love', label: 'Златни сърца', zone: [20, 32, 20, 32], color: '#6a4534' },
-  { id: 'gold-frame', cat: 'love', label: 'Златна рамка с рози', zone: [36, 27, 34, 28], color: '#6a3a3f' },
-  { id: 'pink-roses-gold', cat: 'love', label: 'Рози в рамка', zone: [32, 30, 31, 30], color: '#7a4545' },
-  { id: 'roses-black', cat: 'love', label: 'Рози и черна рамка', zone: [31, 26, 31, 26], color: '#f1d9a8' },
+  { id: 'gold-hearts', cat: 'flowers', label: 'Златни сърца', zone: [20, 32, 20, 32], color: '#6a4534' },
+  { id: 'gold-frame', cat: 'flowers', label: 'Златна рамка с рози', zone: [36, 27, 34, 28], color: '#6a3a3f' },
+  { id: 'pink-roses-gold', cat: 'flowers', label: 'Рози в рамка', zone: [32, 30, 31, 30], color: '#7a4545' },
+  { id: 'roses-black', cat: 'flowers', label: 'Рози и черна рамка', zone: [31, 26, 31, 26], color: '#f1d9a8' },
 
   // --- Рожден ден ---
   { id: 'gifts', cat: 'birthday', label: 'Подаръци', zone: [12, 52, 18, 6], color: '#5b6f8a' },
