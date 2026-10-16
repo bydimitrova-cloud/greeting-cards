@@ -9,7 +9,8 @@ const CATEGORIES = [
   { id: 'love', label: 'Рози и любов' },
   { id: 'birthday', label: 'Рожден ден' },
   { id: 'xmas', label: 'Коледа' },
-  { id: 'easter', label: 'Великден' }
+  { id: 'easter', label: 'Великден' },
+  { id: 'business', label: 'Бизнес' }
 ];
 
 // Картички.
@@ -68,6 +69,12 @@ const TEMPLATES = [
   // --- Великден ---
   { id: 'easter-1', cat: 'easter', label: 'Великденски яйца', zone: [12, 6, 14, 53], color: '#5e4a2a' },
   { id: 'easter-2', cat: 'easter', label: 'Великденски яйца 2', zone: [12, 58, 12, 7], color: '#6b4a2a' },
+
+  // --- Бизнес ---
+  { id: 'thanks-bg', cat: 'business', label: 'Благодарност', zone: [36, 8, 21, 18], color: '#1f2d4f' },
+  { id: 'thanks-en', cat: 'business', label: 'In Appreciation', zone: [36, 8, 21, 18], color: '#1f2d4f' },
+  { id: 'emboss-bouquet', cat: 'business', label: 'Релефен букет', zone: [12, 6, 14, 54], color: '#5e4f42' },
+  { id: 'emboss-ideas', cat: 'business', label: 'Релефна илюстрация', zone: [12, 6, 14, 54], color: '#5e4f42' },
 ];
 
 const GLOWS = {
